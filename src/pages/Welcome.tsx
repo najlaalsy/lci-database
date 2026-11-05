@@ -145,9 +145,9 @@ const Welcome: React.FC = () => {
   const normalizedLocale = locale.toLowerCase();
   const content =
     mdContent[locale] ??
-    (normalizedLocale.startsWith('zh')
-      ? mdContent['zh-CN']
-      : mdContent['en-US']);
+    (normalizedLocale.startsWith('en')
+      ? mdContent['en-US']
+      : mdContent['zh-CN']);
   const { initialState } = useModel('@@initialState');
   const isDark = initialState?.settings?.navTheme === 'realDark';
 
@@ -176,7 +176,7 @@ const Welcome: React.FC = () => {
         data-theme={isDark ? 'dark' : 'light'}
         className="flex flex-col gap-6 md:flex-row"
       >
-        <div className="min-w-0 md:flex-[2] welcome-markdown">
+        <div className="min-w-0 md:flex-2 welcome-markdown">
           <Card>
             <XMarkdown components={mdComponents} config={mdConfig}>
               {content}

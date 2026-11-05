@@ -59,86 +59,35 @@ export default {
     },
   ],
   'POST /api/login/account': async (req: Request, res: Response) => {
-    const { password, username, type } = req.body;
-    await waitTime(2000);
-    if (password === 'ant.design' && username === 'admin') {
-      res.send({
-        status: 'ok',
-        type,
-        currentAuthority: 'admin',
-      });
-      access = 'admin';
-      return;
-    }
-    if (password === 'ant.design' && username === 'user') {
-      res.send({
-        status: 'ok',
-        type,
-        currentAuthority: 'user',
-      });
-      access = 'user';
-      return;
-    }
-    if (type === 'mobile') {
-      res.send({
-        status: 'ok',
-        type,
-        currentAuthority: 'admin',
-      });
-      access = 'admin';
-      return;
-    }
+  const { password, email, type } = req.body;
 
+  await waitTime(2000);
+
+  if (password === 'lci.database' && email === 'admin@example.com') {
     res.send({
-      status: 'error',
+      status: 'ok',
       type,
-      currentAuthority: 'guest',
+      currentAuthority: 'admin',
     });
-    access = 'guest';
-  },
-  'POST /api/login/outLogin': (_req: Request, res: Response) => {
-    access = '';
-    res.send({ data: {}, success: true });
-  },
-  'GET /api/500': (_req: Request, res: Response) => {
-    res.status(500).send({
-      timestamp: 1513932555104,
-      status: 500,
-      error: 'error',
-      message: 'error',
-      path: '/base/category/list',
-    });
-  },
-  'GET /api/404': (_req: Request, res: Response) => {
-    res.status(404).send({
-      timestamp: 1513932643431,
-      status: 404,
-      error: 'Not Found',
-      message: 'No message available',
-      path: '/base/category/list/2121212',
-    });
-  },
-  'GET /api/403': (_req: Request, res: Response) => {
-    res.status(403).send({
-      timestamp: 1513932555104,
-      status: 403,
-      error: 'Forbidden',
-      message: 'Forbidden',
-      path: '/base/category/list',
-    });
-  },
-  'GET /api/401': (_req: Request, res: Response) => {
-    res.status(401).send({
-      timestamp: 1513932555104,
-      status: 401,
-      error: 'Unauthorized',
-      message: 'Unauthorized',
-      path: '/base/category/list',
-    });
-  },
+    access = 'admin';
+    return;
+  }
 
-  'GET /api/login/captcha': async (_req: Request, res: Response) => {
-    await waitTime(2000);
-    return res.json('captcha-xxx');
-  },
+  if (password === 'lci.database' && email === 'user@example.com') {
+    res.send({
+      status: 'ok',
+      type,
+      currentAuthority: 'user',
+    });
+    access = 'user';
+    return;
+  }
+
+  res.send({
+    status: 'error',
+    type,
+    currentAuthority: 'guest',
+  });
+  access = 'guest';
+},
 };
