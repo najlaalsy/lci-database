@@ -201,7 +201,7 @@ const Login: React.FC = () => {
               size: 'large',
               prefix: <UserOutlined />,
             }}
-            placeholder="Email: admin@example.com"
+            placeholder="Email: admin or user @example.com"
             rules={[
               { required: true, message: 'Please enter your email.' },
               { type: 'email', message: 'Please enter a valid email address.' },
