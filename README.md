@@ -1,164 +1,165 @@
-<h1 align="center">Ant Design Pro</h1>
+# LCI Database (SIM-LCI)
 
-<div align="center">
+Sistem informasi berbasis web untuk mengelola basis data Life Cycle Inventory (LCI) dalam konteks Indonesia. Sistem ini menyimpan, mengklasifikasikan, dan menyajikan dataset proses beserta metadatanya secara seragam, dengan pemetaan taksonomi ISIC Rev.5.
 
-An out-of-box UI solution for enterprise applications as a React boilerplate.
+Proyek ini dikembangkan dalam rangka kegiatan magang di BRIN. Tampilan dan struktur datanya mengacu pada TianGong LCDN, dengan cakupan yang sengaja dibuat jauh lebih kecil.
 
-[![CI](https://github.com/ant-design/ant-design-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/ant-design/ant-design-pro/actions/workflows/ci.yml)
-[![GitHub release](https://img.shields.io/github/v/release/ant-design/ant-design-pro.svg)](https://github.com/ant-design/ant-design-pro/releases)
-[![Build With Utoo](https://img.shields.io/badge/build%20with-utoo-028fe4.svg)](https://utoo.land)
-[![Build With Umi](https://img.shields.io/badge/build%20with-umi-028fe4.svg)](https://umijs.org/)
-[![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
-[![Ant Design](https://badgen.net/badge/icon/Ant%20Design?icon=https://gw.alipayobjects.com/zos/antfincdn/Pp4WPgVDB3/KDpgvguMpGfqaHPjicRK.svg&label)](https://ant.design/)
+> Status: dalam pengembangan aktif (tahap MVP), belum ada rilis. Lihat bagian [Status Pengembangan](#status-pengembangan).
 
-Language: English | [简体中文](./README.zh-CN.md)
+## Tujuan Sistem
 
-<img width="1718" height="1191" alt="light theme preview" src="https://github.com/user-attachments/assets/74ad0b4a-e086-4955-8edd-9f2cff31aee8" />
-<img width="1718" height="1191" alt="dark theme preview" src="https://github.com/user-attachments/assets/d4bcb7c1-42c7-4c0f-b130-1193a931f9f7" />
+1. Menyediakan satu tempat terpusat untuk data inventori daur hidup (LCI) yang selama ini tersebar dalam berkas terpisah.
+2. Memastikan setiap dataset memiliki metadata yang seragam sehingga mudah dicari, dibandingkan, dan diverifikasi.
+3. Mengklasifikasikan proses dengan taksonomi ISIC Rev.5 agar selaras dengan klasifikasi proses pada ekosistem TianGong.
+4. Mendukung pertukaran data dalam format JSON-LD, baik untuk impor maupun ekspor.
 
-</div>
+## Fitur
 
-- Preview: https://preview.pro.ant.design
-- Documentation: [docs/cheatsheet.en-US.md](./docs/cheatsheet.en-US.md)
-- ChangeLog: https://github.com/ant-design/ant-design-pro/releases
-- FAQ: [docs/cheatsheet.en-US.md#faq](./docs/cheatsheet.en-US.md#faq)
-- **v6 Released!** — [What's new in v6](https://github.com/ant-design/ant-design-pro/releases/tag/v6.0.0)
+### Cakupan MVP
 
-## Features
+Centang menandakan fitur yang sudah berfungsi di cabang utama.
 
-- :bulb: **TypeScript**: A language for application-scale JavaScript
-- :scroll: **Blocks**: Build page with block template
-- :gem: **Neat Design**: Built on [Ant Design 6](https://ant.design/) specification
-- :triangular_ruler: **Common Templates**: Typical templates for enterprise applications
-- :rocket: **State of The Art Development**: Newest development stack of React 19/[Umi Max 4](https://umijs.org/)/[antd 6](https://ant.design/)/[utoopack](https://utoo.land)
-- :iphone: **Responsive**: Designed for variable screen sizes
-- :art: **Theming**: Customizable theme with [Tailwind CSS v4](https://tailwindcss.com/) + [antd-style](https://github.com/ant-design/antd-style)
-- :globe_with_meridians: **International**: Built-in i18n solution
-- :gear: **Best Practices**: Solid workflow to make your code healthy
-- :1234: **Mock development**: Easy to use mock development solution
-- :robot: **AI Assistant**: Built-in AI chatbot page powered by [Ant Design X](https://x.ant.design/)
-- :white_check_mark: **UI Test**: Fly safely with unit and e2e tests
+* [ ] Registrasi dan login pengguna
+* [ ] Dashboard
+* [ ] Halaman per menu pada sidebar (Open Data dan My Data pada bilah atas)
+* [ ] Menu Processes dengan pohon ISIC Rev.5 bersarang, tampil dan baca data
+* [ ] Impor dataset dari berkas JSON-LD
+* [ ] Input dataset secara manual melalui formulir
+* [ ] Ekspor dataset dalam bentuk zip berisi folder berkas JSON
+* [ ] Antarmuka dua bahasa (Indonesia dan Inggris)
+* [ ] Pembatasan akses: tamu hanya melihat ringkasan (overview), detail dataset memerlukan login
 
-## Templates
+### Direncanakan setelah MVP
 
-```
-- Welcome
-- Dashboard
-  - Analysis
-  - Monitor
-  - Workplace
-- Form
-  - Basic Form
-  - Step Form
-  - Advanced Form
-- List
-  - Search List (Articles/Projects/Applications)
-  - Table List
-  - Basic List
-  - Card List
-- Profile
-  - Basic Profile
-  - Advanced Profile
-- Result
-  - Success
-  - Fail
-- Exception
-  - 403
-  - 404
-  - 500
-- Account
-  - Account Center
-  - Account Settings
-- AI Assistant
-- User
-  - Login
-  - Register
-  - Register Result
+* Commercial Data
+* Alur verifikasi dataset dengan verifikator per sektor (uji coba awal: sektor energi)
+* Impor dan ekspor format lain (ILCD, TIDAS JSON, SQL)
+* Pemetaan KBLI 2020
+* Jalur input massal melalui CSV atau Excel dengan template baku
+
+## Teknologi
+
+| Lapisan | Teknologi |
+| :--- | :--- |
+| Bahasa | TypeScript (frontend dan backend) |
+| Frontend | Template Ant Design Pro (React, UmiJS) dengan penyesuaian |
+| Backend | `<ISI: framework backend, misalnya NestJS atau Express>` |
+| Basis data | PostgreSQL |
+| ORM atau query builder | `<ISI: misalnya Prisma, Drizzle, TypeORM>` |
+| Taksonomi | ISIC Rev.5 (bersumber dari openLCA) |
+| Format data | JSON-LD |
+
+## Struktur Repositori
+
+> Sesuaikan dengan struktur folder yang sebenarnya.
+
+```text
+.
+├── frontend/        Aplikasi antarmuka (Ant Design Pro)
+├── backend/         API dan akses basis data
+├── docs/            Dokumentasi proyek
+│   └── ant-design-pro.md   README bawaan template Ant Design Pro
+├── README.md
+└── LICENSE
 ```
 
-## Usage
+## Cara Menjalankan
 
-### Get Started
+### Prasyarat
 
-Clone or download this repository to your local machine:
+* Node.js `<ISI: samakan dengan kolom engines pada package.json>`
+* PostgreSQL `<ISI: versi yang dipakai>`
+* Manajer paket `<ISI: npm, pnpm, atau yarn>`
+
+### Langkah
+
+1. Klon repositori.
 
 ```bash
-git clone --depth=1 https://github.com/ant-design/ant-design-pro.git myapp
-cd myapp
+git clone <URL_REPOSITORI>
+cd <NAMA_FOLDER>
 ```
 
-### Installation
+2. Siapkan basis data PostgreSQL, lalu buat basis data kosong untuk aplikasi.
 
 ```bash
+createdb lci_database
+```
+
+3. Salin berkas konfigurasi lingkungan dan isi nilainya.
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Variabel yang perlu diisi (sesuaikan dengan `.env.example`):
+
+```text
+DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/lci_database
+PORT=<ISI>
+```
+
+4. Pasang dependensi dan jalankan migrasi basis data.
+
+```bash
+cd backend
 npm install
+npm run <ISI: perintah migrasi>
 ```
 
-### Development
+5. Jalankan backend.
 
 ```bash
-# Start development server (full version by default)
-npm start
+npm run <ISI: perintah dev backend>
 ```
 
-### Simplify to Simple Version
-
-This project includes all blocks by default. If you need a minimal version, run:
+6. Pada terminal lain, jalankan frontend.
 
 ```bash
-npm run simple
+cd frontend
+npm install
+npm run <ISI: perintah dev frontend>
 ```
 
-This will:
-- Remove extra page directories (dashboard, form, list/*, profile, result, exception, account, etc.)
-- Remove extra mock files
-- Replace routes with simple version
-- Remove extra dependencies from package.json
+7. Buka alamat yang ditampilkan di terminal (umumnya `http://localhost:8000` untuk Ant Design Pro).
 
-**Note**: This operation is irreversible and will permanently delete files.
+### Akun uji
 
-### Build
+Selama pengembangan, data awal memakai akun contoh fiktif. Akun ini hanya untuk lingkungan lokal dan tidak boleh dipakai di server nyata.
 
-```bash
-npm run build
-```
+## Status Pengembangan
 
-## AI Skills (Claude Code)
+Pembaruan terakhir: 5 November 2026
 
-This project ships with two built-in [Claude Code Skills](https://docs.anthropic.com/en/docs/claude-code/skills) in `.claude/skills/`:
+| Area | Status |
+| :--- | :--- |
+| Analisis kebutuhan (wawancara dengan periset) | Selesai |
+| Dokumen kebutuhan produk (PRD) | Draf 2 |
+| Rancangan wireframe antarmuka | Selesai |
+| Implementasi frontend | `<ISI: belum dimulai / berjalan / selesai>` |
+| Implementasi backend dan basis data | `<ISI>` |
+| Pengujian | `<ISI>` |
+| Rilis | Belum ada |
 
-| Skill | Trigger | Description |
-|---|---|---|
-| `/pro-upgrade` | "upgrade pro", "update to latest" | Auto-upgrade to the latest Ant Design Pro version. Diffs the latest template, merges framework changes while preserving your business code. |
-| `/antd` | antd-related code or questions | Query antd component APIs, props, tokens, demos; lint for deprecated usage; migrate between versions — all via `@ant-design/cli`. |
+## Dokumentasi
 
-**Usage in Claude Code:**
+Dokumen berikut berada di folder `docs/` (sebagian masih dalam penyusunan):
 
-```bash
-# Upgrade the project to latest Pro version
-/pro-upgrade
+* PRD: kebutuhan dan ruang lingkup produk
+* ARCHITECTURE: arsitektur sistem
+* DATA_MODEL: model data dan skema basis data
+* TASKS: daftar tugas dan kemajuan
+* DECISIONS: catatan keputusan teknis
+* TESTING: strategi pengujian
+* `ant-design-pro.md`: README bawaan template, disimpan sebagai arsip
 
-# Query antd component info, debug issues, run lint, etc.
-/antd
-```
+## Acuan
 
-> 💡 If your project was cloned from this repo, these skills are already included — no installation needed. To get the latest skill definitions, pull the updates from the template or run `npx skills add ant-design/ant-design-pro` to refresh them.
+* TianGong LCDN: acuan tampilan dan struktur data
+* TIDAS (tidas.tiangong.earth): format data TianGong berbasis JSON dan JSON Schema
+* openLCA: sumber taksonomi ISIC
+* Ant Design Pro: template frontend
 
-## Browsers support
+## Lisensi dan Atribusi
 
-Modern browsers.
-
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
-| --- | --- | --- | --- |
-| Edge | last 2 versions | last 2 versions | last 2 versions |
-
-## Contributing
-
-Any type of contribution is welcome, here are some examples of how you may contribute to this project:
-
-- Use Ant Design Pro in your daily work.
-- Submit [issues](http://github.com/ant-design/ant-design-pro/issues) to report bugs or ask questions.
-- Propose [pull requests](http://github.com/ant-design/ant-design-pro/pulls) to improve our code.
-
-<a href="https://openomy.app/github/ant-design/ant-design-pro" target="_blank" style="display: block; width: 100%;" align="center">
-  <img src="https://openomy.app/svg?repo=ant-design/ant-design-pro&chart=bubble&latestMonth=3" target="_blank" alt="Contribution Leaderboard" style="display: block; width: 100%;" />
-</a>
+Lisensi proyek: `<ISI>`. Frontend dibangun di atas template Ant Design Pro yang berlisensi MIT, sehingga berkas lisensi dan pemberitahuan hak cipta dari template tersebut tetap dipertahankan.
