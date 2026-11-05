@@ -26,16 +26,8 @@ Centang menandakan fitur yang sudah berfungsi di cabang utama.
 * [ ] Impor dataset dari berkas JSON-LD
 * [ ] Input dataset secara manual melalui formulir
 * [ ] Ekspor dataset dalam bentuk zip berisi folder berkas JSON
-* [ ] Antarmuka dua bahasa (Indonesia dan Inggris)
+* [ ] Antarmuka dua bahasa Inggris
 * [ ] Pembatasan akses: tamu hanya melihat ringkasan (overview), detail dataset memerlukan login
-
-### Direncanakan setelah MVP
-
-* Commercial Data
-* Alur verifikasi dataset dengan verifikator per sektor (uji coba awal: sektor energi)
-* Impor dan ekspor format lain (ILCD, TIDAS JSON, SQL)
-* Pemetaan KBLI 2020
-* Jalur input massal melalui CSV atau Excel dengan template baku
 
 ## Teknologi
 
@@ -43,9 +35,7 @@ Centang menandakan fitur yang sudah berfungsi di cabang utama.
 | :--- | :--- |
 | Bahasa | TypeScript (frontend dan backend) |
 | Frontend | Template Ant Design Pro (React, UmiJS) dengan penyesuaian |
-| Backend | `<ISI: framework backend, misalnya NestJS atau Express>` |
 | Basis data | PostgreSQL |
-| ORM atau query builder | `<ISI: misalnya Prisma, Drizzle, TypeORM>` |
 | Taksonomi | ISIC Rev.5 (bersumber dari openLCA) |
 | Format data | JSON-LD |
 
