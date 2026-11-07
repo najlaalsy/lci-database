@@ -24,16 +24,16 @@ import Settings from '../../../../config/defaultSettings';
  * Only allow same-origin relative paths starting with '/'.
  */
 const getSafeRedirectUrl = (redirect: string | null): string => {
-  if (!redirect?.startsWith('/')) return '/';
+  if (!redirect?.startsWith('/')) return '/welcome';
 
-  if (redirect.startsWith('//')) return '/';
+  if (redirect.startsWith('//')) return '/welcome';
 
   try {
     const parsed = new URL(redirect, window.location.origin);
-    if (parsed.origin !== window.location.origin) return '/';
+    if (parsed.origin !== window.location.origin) return '/welcome';
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
   } catch {
-    return '/';
+    return '/welcome';
   }
 };
 

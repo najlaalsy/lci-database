@@ -289,7 +289,7 @@ export default [
   {
     path: '/',
     layout: false,
-    redirect: '/dashboard/analysis',
+    redirect: '/welcome',
   },
   {
     component: './exception/404',
