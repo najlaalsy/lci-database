@@ -87,6 +87,39 @@ ol {
           display: block;
         }
       }
+
     }
   }
+}
+
+/* Make ISIC scrollbars visible */
+.ant-pro-sider .ant-layout-sider-children > div:has(> .ant-menu-root) {
+  scrollbar-width: auto;
+  scrollbar-color: #bfbfbf #f0f0f0;
+}
+
+.ant-pro-sider .ant-layout-sider-children > div:has(> .ant-menu-root)::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ant-pro-sider .ant-layout-sider-children > div:has(> .ant-menu-root)::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 4px;
+}
+
+.ant-pro-sider .ant-layout-sider-children > div:has(> .ant-menu-root)::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+/* ISIC navigation horizontal and vertical scrolling */
+.ant-pro-sider .ant-layout-sider-children > div:has(> .ant-menu-root) {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+
+.ant-pro-sider .ant-layout-sider-children > div:has(> .ant-menu-root) > .ant-menu-root {
+  width: max-content !important;
+  min-width: 100%;
 }

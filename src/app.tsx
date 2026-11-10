@@ -6,6 +6,7 @@ import { history, Link } from '@umijs/max';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React from 'react';
+import { isicRev5Sections } from '@/data/isicRev5';
 
 // Initialize dayjs plugins globally
 dayjs.extend(relativeTime);
@@ -71,6 +72,25 @@ export async function getInitialState(): Promise<{
     settingDrawerOpen: false,
   };
 }
+const buildIsicMenu = () => {
+  return isicRev5Sections.map((section) => ({
+    key: `section-${section.code}`,
+    name: `${section.code} ${section.name}`,
+    children: section.divisions.map((division) => ({
+      key: `division-${division.code}`,
+      name: `${division.code} ${division.name}`,
+      children: division.groups.map((group) => ({
+        key: `group-${group.code}`,
+        name: `${group.code} ${group.name}`,
+        children: group.classes.map((item) => ({
+          key: `class-${item.code}`,
+          name: `${item.code} ${item.name}`,
+          path: `/processes/${item.code}`,
+        })),
+      })),
+    })),
+  }));
+};
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({
@@ -78,6 +98,19 @@ export const layout: RunTimeLayoutConfig = ({
   setInitialState,
 }) => {
   return {
+    siderWidth: 300,
+    menuDataRender: (menuData) =>
+      menuData.map((item) => {
+        if (item.path === '/processes') {
+          return {
+            ...item,
+            children: buildIsicMenu(),
+          };
+        }
+
+        return item;
+      }),
+
     menuItemRender: (item, dom) => {
       if (item.path) {
         return (
@@ -181,6 +214,8 @@ export const layout: RunTimeLayoutConfig = ({
       );
     },
     ...initialState?.settings,
+    title: 'SIM-LCI Database',
+    logo: <img alt="LCI Database" src="/logo.png" />,
   };
 };
 
