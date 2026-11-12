@@ -6,6 +6,8 @@ import { history, Link } from '@umijs/max';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React from 'react';
+import { DatasetProvider } from '@/contexts/DatasetContext';
+import { SupportingDataProvider } from '@/contexts/SupportingDataContext';
 import { isicRev5Sections } from '@/data/isicRev5';
 
 // Initialize dayjs plugins globally
@@ -231,9 +233,11 @@ export const request: RequestConfig = {
 
 export function rootContainer(container: React.ReactNode) {
   return (
-    <>
-      <OfflineBanner />
-      <ErrorBoundary>{container}</ErrorBoundary>
-    </>
+    <DatasetProvider>
+      <SupportingDataProvider>
+        <OfflineBanner />
+        <ErrorBoundary>{container}</ErrorBoundary>
+      </SupportingDataProvider>
+    </DatasetProvider>
   );
 }

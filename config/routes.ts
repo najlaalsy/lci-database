@@ -43,7 +43,7 @@ export default [
   },
   {
     path: '/welcome',
-    name: 'Dashboard',
+    name: 'Home',
     icon: 'home',
     component: './Welcome',
   },
@@ -71,6 +71,11 @@ export default [
   {
     path: '/datasets/new',
     component: './Datasets/New',
+    hideInMenu: true,
+  },
+  {
+    path: '/datasets/new/detail/:datasetId',
+    component: './Datasets/New/Detail',
     hideInMenu: true,
   },
   {

@@ -14,46 +14,15 @@ import {
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useMemo, useState } from 'react';
+import { useDatasets } from '@/contexts/DatasetContext';
+import type { Dataset, DatasetStatus } from '@/data/datasets';
 import { isicRev5Sections } from '@/data/isicRev5';
 
 const { Text, Title } = Typography;
 
-interface Dataset {
-  id: number;
-  name: string;
-  location: string;
-  reference: string;
-  type: string;
-  updatedAt: string;
-  classCode: string;
-}
-
-// Data sementara untuk pengembangan tampilan.
-// Nantinya akan diganti dengan data dari database.
-const sampleDatasets: Dataset[] = [
-  {
-    id: 1,
-    name: 'Rice cultivation, Indonesia',
-    location: 'Indonesia',
-    reference: 'Demo reference',
-    type: 'Unit process',
-    updatedAt: '2026-10-15',
-    classCode: '0112',
-  },
-  {
-    id: 2,
-    name: 'Rice production, irrigated',
-    location: 'Southeast Asia',
-    reference: 'Demo reference',
-    type: 'Unit process',
-    updatedAt: '2026-10-20',
-    classCode: '0112',
-  },
-];
-
 const ClassPage: React.FC = () => {
   const { classCode } = useParams<{ classCode: string }>();
-
+  const { datasets } = useDatasets();
   const [searchText, setSearchText] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<string>();
   const [selectedType, setSelectedType] = useState<string>();
@@ -84,7 +53,7 @@ const ClassPage: React.FC = () => {
 
   // Mengambil dataset berdasarkan ISIC Class.
   const filteredDatasets = useMemo(() => {
-    return sampleDatasets.filter((dataset) => {
+    return datasets.filter((dataset) => {
       const matchesClass = dataset.classCode === classCode;
 
       const matchesSearch =
@@ -98,7 +67,7 @@ const ClassPage: React.FC = () => {
 
       return matchesClass && matchesSearch && matchesLocation && matchesType;
     });
-  }, [classCode, searchText, selectedLocation, selectedType]);
+  }, [datasets, classCode, searchText, selectedLocation, selectedType]);
 
   const columns: ColumnsType<Dataset> = [
     {
@@ -125,6 +94,23 @@ const ClassPage: React.FC = () => {
       render: (value: string) => <Tag color="blue">{value}</Tag>,
     },
     {
+      title: 'Status',
+      dataIndex: 'status',
+      width: 160,
+      render: (value: DatasetStatus) => {
+        const statusColors: Record<DatasetStatus, string> = {
+          Draft: 'default',
+          Submitted: 'blue',
+          'Under Review': 'processing',
+          'Revision Required': 'warning',
+          Verified: 'success',
+          Rejected: 'error',
+        };
+
+        return <Tag color={statusColors[value]}>{value}</Tag>;
+      },
+    },
+    {
       title: 'Updated at',
       dataIndex: 'updatedAt',
     },
@@ -132,8 +118,11 @@ const ClassPage: React.FC = () => {
       title: 'Action',
       key: 'action',
       width: 100,
-      render: () => (
-        <Button type="link" disabled>
+      render: (_, record) => (
+        <Button
+          type="link"
+          onClick={() => history.push(`/datasets/new/detail/${record.id}`)}
+        >
           View
         </Button>
       ),

@@ -1,5 +1,6 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
+import { history, useLocation } from '@umijs/max';
 import {
   Button,
   Card,
@@ -13,12 +14,79 @@ import {
   Tabs,
   Typography,
 } from 'antd';
+import { useDatasets } from '@/contexts/DatasetContext';
+import type { Dataset } from '@/data/datasets';
 
 const { TextArea } = Input;
 const { Text } = Typography;
 
 const ManualInputPage: React.FC = () => {
   const [form] = Form.useForm();
+  const { addDataset, datasets } = useDatasets();
+  const { search } = useLocation();
+
+  const queryParams = new URLSearchParams(search);
+  const classCode = queryParams.get('classCode') || '';
+
+  const handleSaveDraft = (values: any) => {
+    const newId = Math.max(0, ...datasets.map((dataset) => dataset.id)) + 1;
+
+    const newDataset: Dataset = {
+      id: newId,
+      name: values.baseName,
+      location: values.location || 'Not specified',
+      reference: values.sourceReference || 'Not provided',
+      type: 'Unit process',
+      updatedAt: new Date().toISOString().slice(0, 10),
+      classCode,
+      status: 'Draft',
+
+      details: {
+        processInformation: {
+          baseName: values.baseName,
+          treatment: values.treatment,
+          mixLocationTypes: values.mixLocationTypes,
+          quantitativeProperties: values.quantitativeProperties,
+          identifier: values.identifier,
+          synonyms: values.synonyms,
+          classificationSystem: values.classificationSystem,
+          classification: values.classification,
+          classificationUri: values.classificationUri,
+          description: values.description,
+        },
+
+        timeLocation: {
+          referenceYear: values.referenceYear,
+          validUntil: values.validUntil,
+          timeDescription: values.timeDescription,
+          location: values.location || 'Not specified',
+          subLocations: values.subLocations,
+          geographicalDescription: values.geographicalDescription,
+        },
+
+        technology: {
+          technologyDescription: values.technologyDescription,
+          technicalPurpose: values.technicalPurpose,
+        },
+
+        inputs: values.inputs || [],
+        outputs: values.outputs || [],
+
+        dataQuality: {
+          dataSource: values.dataSource,
+          sourceReference: values.sourceReference,
+          dataCollectionMethod: values.dataCollectionMethod,
+          dataQualityDescription: values.dataQualityDescription,
+          dataCompleteness: values.dataCompleteness,
+          dataLimitations: values.dataLimitations,
+        },
+      },
+    };
+
+    addDataset(newDataset);
+
+    history.push(`/datasets/new/detail/${newId}`);
+  };
 
   const tabItems = [
     {
@@ -650,6 +718,7 @@ const ManualInputPage: React.FC = () => {
           initialValues={{
             classificationSystem: 'ISIC Rev. 5',
           }}
+          onFinish={handleSaveDraft}
         >
           <Tabs defaultActiveKey="process" items={tabItems} tabPosition="top" />
 
