@@ -18,20 +18,18 @@ const menuItems: MenuProps['items'] = [
   {
     key: 'settings',
     icon: <SettingOutlined />,
-    label: '个人设置',
+    label: 'Account Settings',
   },
   {
     key: 'theme',
     icon: <SkinOutlined />,
-    label: '主题设置',
+    label: 'Theme Settings',
   },
-  {
-    type: 'divider' as const,
-  },
+  { type: 'divider' as const },
   {
     key: 'logout',
     icon: <LogoutOutlined />,
-    label: '退出登录',
+    label: 'Logout',
   },
 ];
 

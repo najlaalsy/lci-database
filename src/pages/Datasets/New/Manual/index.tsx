@@ -1,86 +1,200 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { history, useLocation } from '@umijs/max';
+import { history, useLocation, useModel } from '@umijs/max';
 import {
+  Alert,
   Button,
   Card,
   Col,
   Form,
   Input,
   InputNumber,
+  message,
   Row,
   Select,
   Space,
   Tabs,
   Typography,
 } from 'antd';
+import { useEffect } from 'react';
 import { useDatasets } from '@/contexts/DatasetContext';
 import type { Dataset } from '@/data/datasets';
+import { isicRev5Sections } from '@/data/isicRev5';
 
 const { TextArea } = Input;
 const { Text } = Typography;
+const isicClassOptions = isicRev5Sections.flatMap((section) =>
+  section.divisions.flatMap((division) =>
+    division.groups.flatMap((group) =>
+      group.classes.map((item) => ({
+        value: item.code,
+        label: `${item.code} | ${item.name}`,
+      })),
+    ),
+  ),
+);
 
 const ManualInputPage: React.FC = () => {
   const [form] = Form.useForm();
-  const { addDataset, datasets } = useDatasets();
+  const { initialState } = useModel('@@initialState');
+  const currentUser = initialState?.currentUser;
+  const { addDataset, updateDataset, getDatasetById, datasets } = useDatasets();
+
   const { search } = useLocation();
 
   const queryParams = new URLSearchParams(search);
   const classCode = queryParams.get('classCode') || '';
+  console.log('URL classCode:', classCode);
+  console.log(
+    'Matching ISIC option:',
+    isicClassOptions.find((item) => item.value === classCode),
+  );
+  const datasetId = queryParams.get('datasetId');
+  const isEditMode = Boolean(datasetId);
+
+  const editingDataset = datasetId
+    ? getDatasetById(Number(datasetId))
+    : undefined;
+  const canEditDataset = Boolean(
+    editingDataset &&
+      currentUser?.role === 'contributor' &&
+      editingDataset.createdBy === currentUser.email &&
+      (editingDataset.status === 'Draft' ||
+        editingDataset.status === 'Revision Required'),
+  );
+  // useEffect untuk Edit Mode
+  useEffect(() => {
+    if (!isEditMode || !canEditDataset || !editingDataset) {
+      return;
+    }
+
+    const details = editingDataset.details;
+
+    if (!details) {
+      return;
+    }
+
+    form.setFieldsValue({
+      baseName: details.processInformation?.baseName || editingDataset.name,
+      treatment: details.processInformation?.treatment,
+      mixLocationTypes: details.processInformation?.mixLocationTypes,
+      quantitativeProperties:
+        details.processInformation?.quantitativeProperties,
+      identifier: details.processInformation?.identifier,
+      synonyms: details.processInformation?.synonyms,
+      classificationSystem:
+        details.processInformation?.classificationSystem || 'ISIC Rev. 5',
+      classification:
+        editingDataset.classCode || details.processInformation?.classification,
+      classificationUri: details.processInformation?.classificationUri,
+      description: details.processInformation?.description,
+
+      referenceYear: details.timeLocation?.referenceYear,
+      validUntil: details.timeLocation?.validUntil,
+      timeDescription: details.timeLocation?.timeDescription,
+      location: details.timeLocation?.location || editingDataset.location,
+      subLocations: details.timeLocation?.subLocations,
+      geographicalDescription: details.timeLocation?.geographicalDescription,
+
+      technologyDescription: details.technology?.technologyDescription,
+      technicalPurpose: details.technology?.technicalPurpose,
+
+      inputs: details.inputs || [],
+      outputs: details.outputs || [],
+
+      dataSource: details.dataQuality?.dataSource,
+      sourceReference:
+        details.dataQuality?.sourceReference || editingDataset.reference,
+      dataCollectionMethod: details.dataQuality?.dataCollectionMethod,
+      dataQualityDescription: details.dataQuality?.dataQualityDescription,
+      dataCompleteness: details.dataQuality?.dataCompleteness,
+      dataLimitations: details.dataQuality?.dataLimitations,
+    });
+  }, [isEditMode, canEditDataset, editingDataset, form]);
+  // useEffect untuk Classification otomatis
+  useEffect(() => {
+    if (!isEditMode && classCode) {
+      form.setFieldsValue({
+        classification: classCode,
+      });
+    }
+  }, [isEditMode, classCode, form]);
 
   const handleSaveDraft = (values: any) => {
+    if (isEditMode && !canEditDataset) {
+      message.error('You are not authorized to edit this dataset.');
+      return;
+    }
+    const updatedAt = new Date().toISOString().slice(0, 10);
+
+    const details = {
+      processInformation: {
+        baseName: values.baseName,
+        treatment: values.treatment,
+        mixLocationTypes: values.mixLocationTypes,
+        quantitativeProperties: values.quantitativeProperties,
+        identifier: values.identifier,
+        synonyms: values.synonyms,
+        classificationSystem: values.classificationSystem,
+        classification: values.classification,
+        classificationUri: values.classificationUri,
+        description: values.description,
+      },
+
+      timeLocation: {
+        referenceYear: values.referenceYear,
+        validUntil: values.validUntil,
+        timeDescription: values.timeDescription,
+        location: values.location || 'Not specified',
+        subLocations: values.subLocations,
+        geographicalDescription: values.geographicalDescription,
+      },
+
+      technology: {
+        technologyDescription: values.technologyDescription,
+        technicalPurpose: values.technicalPurpose,
+      },
+
+      inputs: values.inputs || [],
+      outputs: values.outputs || [],
+
+      dataQuality: {
+        dataSource: values.dataSource,
+        sourceReference: values.sourceReference,
+        dataCollectionMethod: values.dataCollectionMethod,
+        dataQualityDescription: values.dataQualityDescription,
+        dataCompleteness: values.dataCompleteness,
+        dataLimitations: values.dataLimitations,
+      },
+    };
+
+    if (isEditMode && editingDataset) {
+      updateDataset(editingDataset.id, {
+        name: values.baseName,
+        location: values.location || 'Not specified',
+        reference: values.sourceReference || 'Not provided',
+        updatedAt,
+        details,
+        classCode: values.classification || classCode,
+      });
+
+      history.push(`/datasets/new/detail/${editingDataset.id}`);
+      return;
+    }
+
     const newId = Math.max(0, ...datasets.map((dataset) => dataset.id)) + 1;
 
     const newDataset: Dataset = {
       id: newId,
       name: values.baseName,
+      createdBy: currentUser?.email || 'unknown',
       location: values.location || 'Not specified',
       reference: values.sourceReference || 'Not provided',
       type: 'Unit process',
-      updatedAt: new Date().toISOString().slice(0, 10),
-      classCode,
+      updatedAt,
+      classCode: values.classification || classCode,
       status: 'Draft',
-
-      details: {
-        processInformation: {
-          baseName: values.baseName,
-          treatment: values.treatment,
-          mixLocationTypes: values.mixLocationTypes,
-          quantitativeProperties: values.quantitativeProperties,
-          identifier: values.identifier,
-          synonyms: values.synonyms,
-          classificationSystem: values.classificationSystem,
-          classification: values.classification,
-          classificationUri: values.classificationUri,
-          description: values.description,
-        },
-
-        timeLocation: {
-          referenceYear: values.referenceYear,
-          validUntil: values.validUntil,
-          timeDescription: values.timeDescription,
-          location: values.location || 'Not specified',
-          subLocations: values.subLocations,
-          geographicalDescription: values.geographicalDescription,
-        },
-
-        technology: {
-          technologyDescription: values.technologyDescription,
-          technicalPurpose: values.technicalPurpose,
-        },
-
-        inputs: values.inputs || [],
-        outputs: values.outputs || [],
-
-        dataQuality: {
-          dataSource: values.dataSource,
-          sourceReference: values.sourceReference,
-          dataCollectionMethod: values.dataCollectionMethod,
-          dataQualityDescription: values.dataQualityDescription,
-          dataCompleteness: values.dataCompleteness,
-          dataLimitations: values.dataLimitations,
-        },
-      },
+      details,
     };
 
     addDataset(newDataset);
@@ -148,8 +262,22 @@ const ManualInputPage: React.FC = () => {
               </Col>
 
               <Col xs={24} md={12}>
-                <Form.Item label="Classification" name="classification">
-                  <Input placeholder="Enter ISIC class code" />
+                <Form.Item
+                  label="Classification"
+                  name="classification"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please select an ISIC class.',
+                    },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    placeholder="Select ISIC class"
+                    options={isicClassOptions}
+                    optionFilterProp="label"
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -698,15 +826,31 @@ const ManualInputPage: React.FC = () => {
       ),
     },
   ];
+  if (isEditMode && !canEditDataset) {
+    return (
+      <PageContainer title="Access Denied">
+        <Alert
+          type="error"
+          showIcon
+          message="Access Denied"
+          description="You are not authorized to edit this dataset."
+        />
+      </PageContainer>
+    );
+  }
   return (
     <PageContainer
-      title="Create LCI Dataset"
-      subTitle="Enter process information to create a new LCI dataset."
+      title={isEditMode ? 'Edit LCI Dataset' : 'Create LCI Dataset'}
+      subTitle={
+        isEditMode
+          ? 'Update the information of your existing LCI dataset.'
+          : 'Enter process information to create a new LCI dataset.'
+      }
       breadcrumb={{
         items: [
           { title: 'Processes' },
           { title: 'Dataset List' },
-          { title: 'Add Dataset' },
+          { title: isEditMode ? 'Edit Dataset' : 'Add Dataset' },
           { title: 'Manual Input' },
         ],
       }}
@@ -726,7 +870,7 @@ const ManualInputPage: React.FC = () => {
             <Space>
               <Button onClick={() => form.resetFields()}>Reset</Button>
               <Button type="primary" htmlType="submit">
-                Save Draft
+                {isEditMode ? 'Save Changes' : 'Save Draft'}
               </Button>
             </Space>
           </Row>

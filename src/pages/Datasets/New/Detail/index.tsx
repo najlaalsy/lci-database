@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-components';
-import { history, useParams } from '@umijs/max';
+import { history, useModel, useParams } from '@umijs/max';
 import {
   Alert,
   Breadcrumb,
@@ -8,6 +8,9 @@ import {
   Col,
   Descriptions,
   Empty,
+  Input,
+  Modal,
+  message,
   Row,
   Space,
   Table,
@@ -15,6 +18,7 @@ import {
   Typography,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { useState } from 'react';
 import { useDatasets } from '@/contexts/DatasetContext';
 import type { Exchange } from '@/data/datasets';
 
@@ -22,7 +26,14 @@ const { Text, Title } = Typography;
 
 const DetailPage: React.FC = () => {
   const { datasetId } = useParams<{ datasetId: string }>();
-  const { getDatasetById } = useDatasets();
+  const { initialState } = useModel('@@initialState');
+  const currentUser = initialState?.currentUser;
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [reviewAction, setReviewAction] = useState<
+    'revision' | 'reject' | null
+  >(null);
+  const [reviewComment, setReviewComment] = useState('');
+  const { getDatasetById, updateDatasetStatus } = useDatasets();
 
   const dataset = getDatasetById(Number(datasetId));
 
@@ -39,7 +50,72 @@ const DetailPage: React.FC = () => {
   }
 
   const details = dataset.details;
+  const isOwner = dataset.createdBy === currentUser?.email;
 
+  const canSubmit =
+    isOwner &&
+    (dataset.status === 'Draft' || dataset.status === 'Revision Required');
+  const isVerifier = currentUser?.role === 'verifier';
+
+  const canEdit =
+    currentUser?.role === 'contributor' &&
+    isOwner &&
+    (dataset.status === 'Draft' || dataset.status === 'Revision Required');
+
+  const canVerify = isVerifier && !isOwner && dataset.status === 'Under Review';
+
+  const canReviewDecision =
+    isVerifier && !isOwner && dataset.status === 'Under Review';
+
+  const canStartReview =
+    isVerifier && !isOwner && dataset.status === 'Submitted';
+
+  const handleStartReview = () => {
+    updateDatasetStatus(dataset.id, 'Under Review');
+    message.success('Review started successfully.');
+  };
+
+  const handleVerify = () => {
+    updateDatasetStatus(dataset.id, 'Verified', undefined, currentUser?.email);
+    message.success('Dataset verified successfully.');
+  };
+
+  const openReviewModal = (action: 'revision' | 'reject') => {
+    setReviewAction(action);
+    setReviewComment('');
+    setReviewModalOpen(true);
+  };
+
+  const handleReviewDecision = () => {
+    const comment = reviewComment.trim();
+
+    if (!comment) {
+      message.warning('Please provide a reason.');
+      return;
+    }
+
+    if (!reviewAction) return;
+
+    const newStatus =
+      reviewAction === 'revision' ? 'Revision Required' : 'Rejected';
+
+    updateDatasetStatus(dataset.id, newStatus, comment, currentUser?.email);
+
+    message.success(
+      reviewAction === 'revision'
+        ? 'Revision requested successfully.'
+        : 'Dataset rejected successfully.',
+    );
+
+    setReviewModalOpen(false);
+    setReviewAction(null);
+    setReviewComment('');
+  };
+
+  const handleSubmitForReview = () => {
+    updateDatasetStatus(dataset.id, 'Submitted', '');
+    message.success('Dataset submitted for review successfully.');
+  };
   const exchangeColumns: ColumnsType<Exchange> = [
     {
       title: 'Flow Name',
@@ -69,7 +145,65 @@ const DetailPage: React.FC = () => {
       title="Dataset Detail"
       breadcrumbRender={false}
       extra={[
-        <Button key="back" onClick={() => history.back()}>
+        ...(canEdit
+          ? [
+              <Button
+                key="edit"
+                onClick={() =>
+                  history.push(`/datasets/new/manual?datasetId=${dataset.id}`)
+                }
+              >
+                Edit Dataset
+              </Button>,
+            ]
+          : []),
+        ...(canSubmit
+          ? [
+              <Button
+                key="submit"
+                type="primary"
+                onClick={handleSubmitForReview}
+              >
+                Submit for Review
+              </Button>,
+            ]
+          : []),
+        ...(canStartReview
+          ? [
+              <Button
+                key="start-review"
+                type="primary"
+                onClick={handleStartReview}
+              >
+                Start Review
+              </Button>,
+            ]
+          : []),
+        ...(canVerify
+          ? [
+              <Button key="verify" type="primary" onClick={handleVerify}>
+                Verify
+              </Button>,
+            ]
+          : []),
+        ...(canReviewDecision
+          ? [
+              <Button
+                key="revision"
+                onClick={() => openReviewModal('revision')}
+              >
+                Request Revision
+              </Button>,
+              <Button
+                key="reject"
+                danger
+                onClick={() => openReviewModal('reject')}
+              >
+                Reject
+              </Button>,
+            ]
+          : []),
+        <Button key="back" onClick={() => history.push('/datasets')}>
           Back to Dataset List
         </Button>,
       ]}
@@ -117,6 +251,9 @@ const DetailPage: React.FC = () => {
           <Card title="Dataset Overview" style={{ height: '100%' }}>
             <Descriptions column={1} size="small">
               <Descriptions.Item label="Name">{dataset.name}</Descriptions.Item>
+              <Descriptions.Item label="Created By">
+                {dataset.createdBy || '-'}
+              </Descriptions.Item>
               <Descriptions.Item label="Location">
                 {dataset.location}
               </Descriptions.Item>
@@ -293,6 +430,21 @@ const DetailPage: React.FC = () => {
         </Col>
       </Row>
 
+      {(dataset.status === 'Revision Required' ||
+        dataset.status === 'Rejected') &&
+        dataset.reviewComment && (
+          <Alert
+            style={{ marginTop: 16 }}
+            type={dataset.status === 'Rejected' ? 'error' : 'warning'}
+            showIcon
+            message={
+              dataset.status === 'Rejected'
+                ? 'Dataset Rejected'
+                : 'Revision Required'
+            }
+            description={dataset.reviewComment}
+          />
+        )}
       {!details && (
         <Alert
           style={{ marginTop: 16 }}
@@ -302,6 +454,43 @@ const DetailPage: React.FC = () => {
           description="Detailed information has not been entered for this dataset."
         />
       )}
+      <Modal
+        title={
+          reviewAction === 'revision'
+            ? 'Request Dataset Revision'
+            : 'Reject Dataset'
+        }
+        open={reviewModalOpen}
+        onOk={handleReviewDecision}
+        onCancel={() => {
+          setReviewModalOpen(false);
+          setReviewAction(null);
+          setReviewComment('');
+        }}
+        okText={
+          reviewAction === 'revision'
+            ? 'Submit Revision Request'
+            : 'Confirm Rejection'
+        }
+        okButtonProps={{
+          danger: reviewAction === 'reject',
+        }}
+      >
+        <Typography.Paragraph>
+          {reviewAction === 'revision'
+            ? 'Explain what needs to be corrected in this dataset.'
+            : 'Provide a reason for rejecting this dataset.'}
+        </Typography.Paragraph>
+
+        <Input.TextArea
+          rows={4}
+          value={reviewComment}
+          onChange={(event) => setReviewComment(event.target.value)}
+          placeholder="Enter your comments or reason..."
+          maxLength={1000}
+          showCount
+        />
+      </Modal>
     </PageContainer>
   );
 };

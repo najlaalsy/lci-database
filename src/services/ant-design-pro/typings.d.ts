@@ -15,6 +15,7 @@ declare namespace API {
     unreadCount?: number;
     country?: string;
     access?: string;
+    role?: 'admin' | 'contributor' | 'verifier';
     geographic?: {
       province?: { label?: string; key?: string };
       city?: { label?: string; key?: string };
@@ -23,10 +24,11 @@ declare namespace API {
     phone?: string;
   };
 
-  type LoginResult = {
+    type LoginResult = {
     status?: string;
     type?: string;
     currentAuthority?: string;
+    message?: string;
   };
 
   type PageParams = {
@@ -67,6 +69,44 @@ declare namespace API {
   autoLogin?: boolean;
   type?: string;
 };
+  type UserRole = 'admin' | 'contributor' | 'verifier';
+
+  type UserStatus = 'Active' | 'Inactive';
+
+  type User = {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+    status: UserStatus;
+    createdAt: string;
+  };
+
+  type UserListResponse = {
+    success: boolean;
+    data: User[];
+    message?: string;
+  };
+
+  type UserMutationResponse = {
+    success: boolean;
+    data?: User;
+    message?: string;
+  };
+
+  type UserCreateParams = {
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
+  };
+
+  type UserUpdateParams = {
+    name: string;
+    email: string;
+    role: UserRole;
+    password?: string;
+  };
 
   type ErrorResponse = {
     /** 业务约定的错误码 */
@@ -97,5 +137,29 @@ declare namespace API {
     datetime?: string;
     description?: string;
     type?: NoticeIconItemType;
+  };
+    type UserRole = 'admin' | 'contributor' | 'verifier';
+
+  type UserStatus = 'Active' | 'Inactive';
+
+  type User = {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+    status: UserStatus;
+    createdAt: string;
+  };
+
+  type UserListResponse = {
+    success: boolean;
+    data: User[];
+    message?: string;
+  };
+
+  type UserMutationResponse = {
+    success: boolean;
+    data?: User;
+    message?: string;
   };
 }

@@ -44,16 +44,19 @@ export async function getInitialState(): Promise<{
       const msg = await queryCurrentUser({
         skipErrorHandler: true,
       });
+
       return msg.data;
     } catch (_error) {
       const { pathname, search, hash } = history.location;
+
       history.replace(
         `${loginPath}?redirect=${encodeURIComponent(pathname + search + hash)}`,
       );
     }
+
     return undefined;
   };
-  // 如果不是登录页面，执行
+
   const { location } = history;
   if (
     ![loginPath, '/user/register', '/user/register-result'].includes(
@@ -102,16 +105,31 @@ export const layout: RunTimeLayoutConfig = ({
   return {
     siderWidth: 300,
     menuDataRender: (menuData) =>
-      menuData.map((item) => {
-        if (item.path === '/processes') {
-          return {
-            ...item,
-            children: buildIsicMenu(),
-          };
-        }
+      menuData
+        .filter(
+          (item) =>
+            item.path !== '/admin/users' ||
+            initialState?.currentUser?.role === 'admin',
+        )
+        .map((item) => {
+          if (item.path === '/datasets') {
+            return {
+              ...item,
+              name:
+                initialState?.currentUser?.role === 'contributor'
+                  ? 'My Datasets'
+                  : 'Datasets',
+            };
+          }
+          if (item.path === '/processes') {
+            return {
+              ...item,
+              children: buildIsicMenu(),
+            };
+          }
 
-        return item;
-      }),
+          return item;
+        }),
 
     menuItemRender: (item, dom) => {
       if (item.path) {
@@ -136,7 +154,7 @@ export const layout: RunTimeLayoutConfig = ({
     },
     avatarProps: {
       src: initialState?.currentUser?.avatar,
-      title: 'ProUser',
+      title: initialState?.currentUser?.name || 'User',
       render: (_, avatarChildren) => (
         <AvatarDropdown>{avatarChildren}</AvatarDropdown>
       ),
@@ -147,11 +165,34 @@ export const layout: RunTimeLayoutConfig = ({
     footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history;
-      // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      const currentUser = initialState?.currentUser;
+
+      // Redirect unauthenticated users to login
+      if (!currentUser && location.pathname !== loginPath) {
         history.replace(
-          `${loginPath}?redirect=${encodeURIComponent(location.pathname + location.search + location.hash)}`,
+          `${loginPath}?redirect=${encodeURIComponent(
+            location.pathname + location.search + location.hash,
+          )}`,
         );
+        return;
+      }
+      // Redirect non-admin users away from User Management
+      if (
+        location.pathname.startsWith('/admin/users') &&
+        currentUser?.role !== 'admin' &&
+        currentUser?.role !== 'verifier'
+      ) {
+        history.replace('/welcome');
+        return;
+      }
+
+      // Redirect Verifier away from Admin and Contributor pages
+      if (
+        currentUser?.role === 'verifier' &&
+        !location.pathname.startsWith('/verifier')
+      ) {
+        history.replace('/verifier/dashboard');
+        return;
       }
     },
     bgLayoutImgList: [

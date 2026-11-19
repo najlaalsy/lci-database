@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "entityType": "dataset",
+  "data": {
+    "processInformation": {
+      "baseName": "Rice cultivation, Indonesia",
+      "treatment": "Irrigated",
+      "identifier": "LCI-RICE-001",
+      "synonyms": ["Paddy cultivation"],
+      "classificationSystem": "ISIC Rev.5",
+      "classification": "0112",
+      "description": "Dataset for rice cultivation."
+    },
+    "timeLocation": {
+      "referenceYear": 2025,
+      "validUntil": 2026,
+      "location": "Indonesia",
+      "subLocations": ["West Java"],
+      "timeDescription": "Reference year 2025"
+    },
+    "technology": {
+      "technologyDescription": "Conventional rice cultivation",
+      "technicalPurpose": "Rice production"
+    },
+    "inputs": [
+      {
+        "flowName": "Urea",
+        "flowCategory": "Material",
+        "amount": 100,
+        "unit": "kg"
+      }
+    ],
+    "outputs": [
+      {
+        "flowName": "Rice",
+        "flowCategory": "Product",
+        "amount": 1000,
+        "unit": "kg"
+      }
+    ],
+    "dataQuality": {
+      "dataSource": "Primary data",
+      "sourceReference": "Agricultural field survey 2025",
+      "dataCollectionMethod": "Field observation",
+      "dataQualityDescription": "Demonstration data",
+      "dataCompleteness": "Complete",
+      "dataLimitations": "Limited geographical coverage"
+    }
+  }
+}

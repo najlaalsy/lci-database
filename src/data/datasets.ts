@@ -58,17 +58,26 @@ export interface DatasetDetails {
   outputs: Exchange[];
   dataQuality: DataQuality;
 }
-
+export interface ReviewHistoryEntry {
+  id: string;
+  reviewedBy: string;
+  reviewedAt: string;
+  decision: 'Verified' | 'Rejected' | 'Revision Required';
+  comment?: string;
+}
 export interface Dataset {
   id: number;
   name: string;
+  createdBy?: string;
   location: string;
   reference: string;
   type: string;
   updatedAt: string;
   classCode: string;
   status: DatasetStatus;
+  reviewComment?: string;
   details?: DatasetDetails;
+  reviewHistory?: ReviewHistoryEntry[];
 }
 
 export const sampleDatasets: Dataset[] = [
@@ -90,6 +99,6 @@ export const sampleDatasets: Dataset[] = [
     type: 'Unit process',
     updatedAt: '2026-10-20',
     classCode: '0112',
-    status: 'Under Review',
+    status: 'Submitted',
   },
 ];

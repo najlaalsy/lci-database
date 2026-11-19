@@ -1,16 +1,15 @@
-/**
- * @name umi 的路由配置
- * @description 只支持 path,component,routes,redirect,wrappers,name,icon 的配置
- * @param path  path 只支持两种占位符配置，第一种是动态参数 :id 的形式，第二种是 * 通配符，通配符只能出现路由字符串的最后。
- * @param component 配置 location 和 path 匹配后用于渲染的 React 组件路径。可以是绝对路径，也可以是相对路径，如果是相对路径，会从 src/pages 开始找起。
- * @param routes 配置子路由，通常在需要为多个路径增加 layout 组件时使用。
- * @param redirect 配置路由跳转
- * @param wrappers 配置路由组件的包装组件，通过包装组件可以为当前的路由组件组合进更多的功能。 比如，可以用于路由级别的权限校验
- * @param name 配置路由的标题，默认读取国际化文件 menu.ts 中 menu.xxxx 的值，如配置 name 为 login，则读取 menu.ts 中 menu.login 的取值作为标题
- * @param icon 配置路由的图标，取值参考 https://ant.design/components/icon-cn， 注意去除风格后缀和大小写，如想要配置图标为 <StepBackwardOutlined /> 则取值应为 stepBackward 或 StepBackward，如想要配置图标为 <UserOutlined /> 则取值应为 user 或者 User
+﻿/**
+ * @name umi çš„è·¯ç”±é…ç½®
+ * @description åªæ”¯æŒ path,component,routes,redirect,wrappers,name,icon çš„é…ç½®
+ * @param path  path åªæ”¯æŒä¸¤ç§å ä½ç¬¦é…ç½®ï¼Œç¬¬ä¸€ç§æ˜¯åŠ¨æ€å‚æ•° :id çš„å½¢å¼ï¼Œç¬¬äºŒç§æ˜¯ * é€šé…ç¬¦ï¼Œé€šé…ç¬¦åªèƒ½å‡ºçŽ°è·¯ç”±å­—ç¬¦ä¸²çš„æœ€åŽã€‚
+ * @param component é…ç½® location å’Œ path åŒ¹é…åŽç”¨äºŽæ¸²æŸ“çš„ React ç»„ä»¶è·¯å¾„ã€‚å¯ä»¥æ˜¯ç»å¯¹è·¯å¾„ï¼Œä¹Ÿå¯ä»¥æ˜¯ç›¸å¯¹è·¯å¾„ï¼Œå¦‚æžœæ˜¯ç›¸å¯¹è·¯å¾„ï¼Œä¼šä»Ž src/pages å¼€å§‹æ‰¾èµ·ã€‚
+ * @param routes é…ç½®å­è·¯ç”±ï¼Œé€šå¸¸åœ¨éœ€è¦ä¸ºå¤šä¸ªè·¯å¾„å¢žåŠ  layout ç»„ä»¶æ—¶ä½¿ç”¨ã€‚
+ * @param redirect é…ç½®è·¯ç”±è·³è½¬
+ * @param wrappers é…ç½®è·¯ç”±ç»„ä»¶çš„åŒ…è£…ç»„ä»¶ï¼Œé€šè¿‡åŒ…è£…ç»„ä»¶å¯ä»¥ä¸ºå½“å‰çš„è·¯ç”±ç»„ä»¶ç»„åˆè¿›æ›´å¤šçš„åŠŸèƒ½ã€‚ æ¯”å¦‚ï¼Œå¯ä»¥ç”¨äºŽè·¯ç”±çº§åˆ«çš„æƒé™æ ¡éªŒ
+ * @param name é…ç½®è·¯ç”±çš„æ ‡é¢˜ï¼Œé»˜è®¤è¯»å–å›½é™…åŒ–æ–‡ä»¶ menu.ts ä¸­ menu.xxxx çš„å€¼ï¼Œå¦‚é…ç½® name ä¸º loginï¼Œåˆ™è¯»å– menu.ts ä¸­ menu.login çš„å–å€¼ä½œä¸ºæ ‡é¢˜
+ * @param icon é…ç½®è·¯ç”±çš„å›¾æ ‡ï¼Œå–å€¼å‚è€ƒ https://ant.design/components/icon-cnï¼Œ æ³¨æ„åŽ»é™¤é£Žæ ¼åŽç¼€å’Œå¤§å°å†™ï¼Œå¦‚æƒ³è¦é…ç½®å›¾æ ‡ä¸º <StepBackwardOutlined /> åˆ™å–å€¼åº”ä¸º stepBackward æˆ– StepBackwardï¼Œå¦‚æƒ³è¦é…ç½®å›¾æ ‡ä¸º <UserOutlined /> åˆ™å–å€¼åº”ä¸º user æˆ–è€… User
  * @doc https://umijs.org/docs/guides/routes
  */
-
 export default [
   {
     path: '/user',
@@ -46,6 +45,18 @@ export default [
     name: 'Home',
     icon: 'home',
     component: './Welcome',
+  },
+  {
+    path: '/admin/users',
+    name: 'User Management',
+    icon: 'team',
+    component: './Admin/Users',
+  },
+  {
+    path: '/datasets',
+    name: 'Datasets',
+    icon: 'database',
+    component: './Datasets/List',
   },
   {
     path: '/processes',
@@ -99,12 +110,48 @@ export default [
         name: 'Unit-groups',
         component: './SupportingData/UnitGroups',
       },
+      {
+        path: '/supporting-data/sources',
+        name: 'Sources',
+        component: './SupportingData/Sources',
+      },
     ],
+  },
+  {
+    path: '/verifier',
+    layout: false,
+    wrappers: ['@/wrappers/verifier'],
+    redirect: '/verifier/dashboard',
+  },
+  {
+    path: '/verifier/dashboard',
+    layout: false,
+    wrappers: ['@/wrappers/verifier'],
+    component: './verifier/Dashboard',
+  },
+  {
+    path: '/verifier/review-queue',
+    layout: false,
+    wrappers: ['@/wrappers/verifier'],
+    component: './verifier/ReviewQueue',
+  },
+  {
+    path: '/verifier/history',
+    layout: false,
+    wrappers: ['@/wrappers/verifier'],
+    component: './verifier/VerificationHistory',
+  },
+  {
+    path: '/verifier/datasets/:datasetId',
+    layout: false,
+    wrappers: ['@/wrappers/verifier'],
+    component: './Datasets/New/Detail',
+    hideInMenu: true,
   },
   {
     path: '/',
     layout: false,
-    redirect: '/welcome',
+    redirect: '/user/login',
   },
   {
     path: '/*',

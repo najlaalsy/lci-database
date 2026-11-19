@@ -1,5 +1,4 @@
 // https://umijs.org/config/
-
 import { join } from 'node:path';
 import { defineConfig } from '@umijs/max';
 import defaultSettings from './defaultSettings';
@@ -189,7 +188,7 @@ export default defineConfig({
   ],
 
   //================ pro 插件配置 =================
-  plugins: ['@umijs/max-plugin-openapi', '@umijs/request-record'],
+  plugins: ['@umijs/max-plugin-openapi'],
 
   /**
    * @name openAPI 插件的配置
@@ -205,12 +204,9 @@ export default defineConfig({
       mock: false,
     },
   ],
-
   tailwindcss: {},
-
   mock: {
     include: ['src/pages/**/_mock.ts'],
-    exclude: ['mock/requestRecord.mock.js'],
   },
   utoopack: {
     module: {
@@ -226,7 +222,6 @@ export default defineConfig({
       lazyDynamicImports: true,
     },
   },
-  requestRecord: {},
   exportStatic: {},
   define: {
     'process.env.CI': process.env.CI,

@@ -1,9 +1,10 @@
 /**
- * loading 占位
- * 解决首次加载时白屏的问题
+ * Loading placeholder
+ * Prevents a blank screen during the initial application load
  */
 (() => {
   const _root = document.querySelector('#root');
+
   if (_root && _root.innerHTML === '') {
     _root.innerHTML = `
       <style>
@@ -14,6 +15,7 @@
           margin: 0;
           padding: 0;
         }
+
         #root {
           background-repeat: no-repeat;
           background-size: 100% auto;
@@ -35,6 +37,7 @@
           justify-content: center;
           padding: 26px;
         }
+
         .ant-spin {
           position: absolute;
           display: none;
@@ -89,7 +92,7 @@
           -ms-transform-origin: 50% 50%;
           transform-origin: 50% 50%;
           opacity: 0.3;
-          -webkit-animation: antspinmove 1s infinite linear alternate;
+          -webkit-animation: antSpinMove 1s infinite linear alternate;
           animation: antSpinMove 1s infinite linear alternate;
         }
 
@@ -123,7 +126,7 @@
           -webkit-transform: rotate(45deg);
           -ms-transform: rotate(45deg);
           transform: rotate(45deg);
-          -webkit-animation: antrotate 1.2s infinite linear;
+          -webkit-animation: antRotate 1.2s infinite linear;
           animation: antRotate 1.2s infinite linear;
         }
 
@@ -191,10 +194,10 @@
           </div>
         </div>
         <div class="loading-title">
-          正在加载资源
+          Loading SIM-LCI Database...
         </div>
         <div class="loading-sub-title">
-          初次加载资源可能需要较多时间 请耐心等待
+          Initial loading may take a little longer. Please wait.
         </div>
       </div>
     `;

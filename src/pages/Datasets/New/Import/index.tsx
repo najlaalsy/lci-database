@@ -5,7 +5,7 @@ import {
   UploadOutlined,
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { history } from '@umijs/max';
+import { history, useModel } from '@umijs/max';
 import type { UploadFile } from 'antd';
 import {
   Alert,
@@ -154,6 +154,8 @@ const validateImportData = (
 };
 
 const ImportDatasetPage: React.FC = () => {
+  const { initialState } = useModel('@@initialState');
+  const currentUser = initialState?.currentUser;
   const { addDataset, datasets } = useDatasets();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
@@ -218,6 +220,7 @@ const ImportDatasetPage: React.FC = () => {
     const newDataset: Dataset = {
       id: newId,
       name: details.processInformation.baseName,
+      createdBy: currentUser?.email || 'unknown',
       location: details.timeLocation.location || 'Not specified',
       reference: details.dataQuality.sourceReference || 'Not provided',
       type: 'Unit process',

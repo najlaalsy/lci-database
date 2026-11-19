@@ -104,9 +104,9 @@ const Login: React.FC = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
   const intl = useIntl();
-
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = async (): Promise<API.CurrentUser | undefined> => {
     const userInfo = await initialState?.fetchUserInfo?.();
+
     if (userInfo) {
       startTransition(() => {
         setInitialState((s) => ({
@@ -114,12 +114,15 @@ const Login: React.FC = () => {
           currentUser: userInfo,
         }));
       });
+
+      return userInfo;
     }
+
+    return undefined;
   };
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
-      // 登录
       const msg = await login({ ...values, type: 'account' });
       if (msg.status === 'ok') {
         const defaultLoginSuccessMessage = intl.formatMessage({
@@ -127,13 +130,38 @@ const Login: React.FC = () => {
           defaultMessage: '登录成功！',
         });
         message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
+        const userInfo = await fetchUserInfo();
+
+        if (!userInfo) {
+          message.error(
+            'Unable to retrieve user information. Please login again.',
+          );
+          return;
+        }
+
         const urlParams = new URL(window.location.href).searchParams;
-        const redirectUrl = getSafeRedirectUrl(urlParams.get('redirect'));
+        const requestedUrl = getSafeRedirectUrl(urlParams.get('redirect'));
+
+        let redirectUrl: string;
+
+        if (userInfo.role === 'verifier') {
+          redirectUrl = '/verifier/dashboard';
+        } else if (requestedUrl.startsWith('/verifier')) {
+          redirectUrl = '/welcome';
+        } else {
+          redirectUrl = requestedUrl;
+        }
+
         window.location.href = redirectUrl;
         return;
       }
-      // 如果失败去设置用户错误信息
+
+      if (msg.status === 'inactive' || msg.status === 'error') {
+        message.error(msg.message || 'Unable to login. Please try again.');
+        setUserLoginState(msg);
+        return;
+      }
+
       setUserLoginState(msg);
     } catch {
       const defaultLoginFailureMessage = intl.formatMessage({

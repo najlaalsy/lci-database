@@ -1,5 +1,3 @@
-// @ts-ignore
-/* eslint-disable */
 import { request } from '@umijs/max';
 
 /** 获取当前的用户 GET /api/currentUser */
@@ -32,6 +30,62 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
   });
 }
 
+/** User Management */
+
+export async function getUsers() {
+  return request<API.UserListResponse>('/api/users', {
+    method: 'GET',
+  });
+}
+
+export async function createUser(body: {
+  name: string;
+  email: string;
+  password: string;
+  role: API.UserRole;
+}) {
+  return request<API.UserMutationResponse>('/api/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
+export async function updateUser(
+  id: string,
+  body: {
+    name: string;
+    email: string;
+    role: API.UserRole;
+    password?: string;
+  },
+) {
+  return request<API.UserMutationResponse>(`/api/users/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}
+
+export async function updateUserStatus(
+  id: string,
+  status: API.UserStatus,
+) {
+  return request<API.UserMutationResponse>(
+    `/api/users/${id}/status`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: { status },
+    },
+  );
+}
 /** 此处后端没有提供注释 GET /api/notices */
 export async function getNotices(options?: { [key: string]: any }) {
   return request<API.NoticeIconList>('/api/notices', {
